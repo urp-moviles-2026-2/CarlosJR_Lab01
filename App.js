@@ -12,8 +12,10 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import TareaItem from './components/TareaItem';
 import { colores } from './theme';
 
 export default function App() {
@@ -40,8 +42,15 @@ export default function App() {
     Keyboard.dismiss();
   }
 
+  function eliminarTarea(id) {
+    // filter devuelve un arreglo nuevo sin la tarea eliminada.
+    setTareas((actuales) => actuales.filter((tarea) => tarea.id !== id));
+  }
+
   return (
-    <SafeAreaProvider>
+    // Los gestos solo funcionan dentro de GestureHandlerRootView.
+    <GestureHandlerRootView style={styles.raiz}>
+      <SafeAreaProvider>
         <SafeAreaView style={styles.areaSegura} edges={['top', 'bottom']}>
           <StatusBar style="dark" />
 
@@ -94,9 +103,7 @@ export default function App() {
               data={tareas}
               keyExtractor={(tarea) => tarea.id}
               renderItem={({ item }) => (
-                <View style={styles.tarjetaTarea}>
-                  <Text style={styles.textoTarea}>{item.texto}</Text>
-                </View>
+                <TareaItem tarea={item} onEliminar={eliminarTarea} />
               )}
               contentContainerStyle={styles.lista}
               keyboardShouldPersistTaps="handled"
@@ -117,6 +124,7 @@ export default function App() {
           </KeyboardAvoidingView>
         </SafeAreaView>
       </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
@@ -192,19 +200,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-  },
-  tarjetaTarea: {
-    backgroundColor: colores.tarjeta,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colores.borde,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  textoTarea: {
-    fontSize: 16,
-    color: colores.texto,
   },
   lista: {
     paddingHorizontal: 20,
